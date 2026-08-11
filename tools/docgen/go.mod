@@ -10,7 +10,7 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
 	github.com/siderolabs/gen v0.8.7
 	go.yaml.in/yaml/v4 v4.0.0-rc.6
-	mvdan.cc/gofumpt v0.10.0
+	mvdan.cc/gofumpt v0.11.0
 )
 
 require (

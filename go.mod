@@ -10,7 +10,7 @@ replace (
 	github.com/mdlayher/ethtool => github.com/siderolabs/ethtool v0.6.0-sidero
 
 	// see https://github.com/mdlayher/kobject/pull/5
-	github.com/mdlayher/kobject => github.com/smira/kobject v0.0.0-20240304111826-49c8d4613389
+	github.com/mdlayher/kobject => github.com/smira/kobject 19ca17470d7d
 
 	// replace to disable assembly implementation (see https://github.com/beevik/nts/issues/1#issuecomment-4879122150)
 	github.com/secure-io/siv-go => github.com/smira/siv-go v0.0.0-20260706144621-2093d2730928
@@ -24,18 +24,18 @@ replace (
 
 // Kubernetes dependencies sharing the same version.
 require (
-	k8s.io/api v0.37.0-beta.0
-	k8s.io/apiextensions-apiserver v0.37.0-beta.0
-	k8s.io/apimachinery v0.37.0-beta.0
-	k8s.io/apiserver v0.37.0-beta.0
-	k8s.io/client-go v0.37.0-beta.0
-	k8s.io/component-base v0.37.0-beta.0
-	k8s.io/cri-api v0.37.0-beta.0
-	k8s.io/kube-proxy v0.37.0-beta.0
-	k8s.io/kube-scheduler v0.37.0-beta.0
-	k8s.io/kubectl v0.37.0-beta.0
-	k8s.io/kubelet v0.37.0-beta.0
-	k8s.io/pod-security-admission v0.37.0-beta.0
+	k8s.io/api v0.37.0-rc.0
+	k8s.io/apiextensions-apiserver v0.37.0-rc.0
+	k8s.io/apimachinery v0.37.0-rc.0
+	k8s.io/apiserver v0.37.0-rc.0
+	k8s.io/client-go v11.0.0+incompatible
+	k8s.io/component-base v0.37.0-rc.0
+	k8s.io/cri-api v0.37.0-rc.0
+	k8s.io/kube-proxy v0.37.0-rc.0
+	k8s.io/kube-scheduler v0.37.0-rc.0
+	k8s.io/kubectl v0.37.0-rc.0
+	k8s.io/kubelet v0.37.0-rc.0
+	k8s.io/pod-security-admission v0.37.0-rc.0
 )
 
 require (
@@ -46,16 +46,16 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates v1.5.0
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys v1.5.0
 	github.com/alexflint/go-filemutex v1.3.0
-	github.com/aws/aws-sdk-go-v2 v1.43.4
-	github.com/aws/aws-sdk-go-v2/config v1.32.35
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.35
-	github.com/aws/aws-sdk-go-v2/service/acm v1.43.4
-	github.com/aws/aws-sdk-go-v2/service/kms v1.55.4
-	github.com/aws/smithy-go v1.27.6
+	github.com/aws/aws-sdk-go-v2 v1.43.5
+	github.com/aws/aws-sdk-go-v2/config v1.32.36
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.36
+	github.com/aws/aws-sdk-go-v2/service/acm v1.43.5
+	github.com/aws/aws-sdk-go-v2/service/kms v1.55.5
+	github.com/aws/smithy-go v1.27.7
 	github.com/beevik/ntp v1.5.0
 	github.com/beevik/nts v0.3.1
 	github.com/blang/semver/v4 v4.0.0
-	github.com/cenkalti/backoff/v4 v4.3.0
+	github.com/cenkalti/backoff/v7 v7.0.0
 	github.com/containerd/cgroups/v3 v3.1.3
 	github.com/containerd/containerd/api v1.11.1
 	github.com/containerd/containerd/v2 v2.3.3
@@ -80,17 +80,17 @@ require (
 	github.com/freddierice/go-losetup/v2 v2.0.1
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/g0rbe/go-chattr v1.0.1
-	github.com/gdamore/tcell/v2 v2.13.10
+	github.com/gdamore/tcell/v3 v3.4.1
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/godbus/dbus/v5 v5.2.2
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/google/cadvisor/lib v0.60.5
-	github.com/google/cel-go v0.30.0
+	github.com/google/cel-go v0.31.0
 	github.com/google/go-containerregistry v0.21.9
 	github.com/google/go-tpm v0.9.8
 	github.com/google/nftables v0.3.0
 	github.com/google/uuid v1.6.0
-	github.com/gopacket/gopacket v1.7.0
+	github.com/gopacket/gopacket v1.7.1
 	github.com/gosuri/uiprogress v0.0.1
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/hashicorp/go-cleanhttp v0.5.2
@@ -102,7 +102,7 @@ require (
 	github.com/jeromer/syslogparser v1.1.0
 	github.com/jsimonetti/rtnetlink/v2 v2.2.1-0.20260802200809-43bafec815b3
 	github.com/jxskiss/base62 v1.1.0
-	github.com/klauspost/compress v1.19.1
+	github.com/klauspost/compress v1.19.2
 	github.com/klauspost/cpuid/v2 v2.4.0
 	github.com/linode/go-metadata v0.3.0
 	github.com/martinlindhe/base36 v1.1.1
@@ -193,7 +193,7 @@ require (
 	golang.org/x/time v0.15.0
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20241231184526-a9ab2273dd10
 	google.golang.org/grpc v1.83.0
-	google.golang.org/protobuf v1.36.12-0.20260806062936-644d0267c26e
+	google.golang.org/protobuf v1.36.12
 	gopkg.in/typ.v4 v4.4.0
 	k8s.io/klog/v2 v2.140.0
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.78
