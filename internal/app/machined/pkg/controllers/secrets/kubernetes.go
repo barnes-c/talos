@@ -75,12 +75,20 @@ func (ctrl *KubernetesController) Run(ctx context.Context, r controller.Runtime,
 	refreshTicker := time.NewTicker(KubernetesCertificateValidityDuration / 2)
 	defer refreshTicker.Stop()
 
+	var (
+		lastSynced      bool
+		lastRootVersion string
+	)
+
 	for {
+		periodicRefresh := false
+
 		select {
 		case <-ctx.Done():
 			return nil
 		case <-r.EventCh():
 		case <-refreshTicker.C:
+			periodicRefresh = true
 		}
 
 		k8sRoot, err := safe.ReaderGet[*secrets.KubernetesRoot](ctx, r, resource.NewMetadata(secrets.NamespaceName, secrets.KubernetesRootType, secrets.KubernetesRootID, resource.VersionUndefined))
@@ -89,6 +97,8 @@ func (ctrl *KubernetesController) Run(ctx context.Context, r controller.Runtime,
 				if err = ctrl.teardownAll(ctx, r); err != nil {
 					return fmt.Errorf("error destroying resources: %w", err)
 				}
+
+				lastSynced, lastRootVersion = false, ""
 
 				continue
 			}
@@ -107,6 +117,18 @@ func (ctrl *KubernetesController) Run(ctx context.Context, r controller.Runtime,
 		}
 
 		if !timeSync.TypedSpec().Synced {
+			lastSynced = false
+
+			continue
+		}
+
+		rootVersion := k8sRoot.Metadata().Version().String()
+
+		// Only the Synced flag matters here: it gates certificate generation on the clock
+		// being correct. The other TimeStatus fields (SpikeDetected, ConsecutiveSpikes) flip
+		// on transient NTP jitter without the clock ever moving, and regenerating on those
+		// re-renders the control plane static pods, restarting the whole control plane.
+		if lastSynced && !periodicRefresh && rootVersion == lastRootVersion {
 			continue
 		}
 
@@ -115,6 +137,8 @@ func (ctrl *KubernetesController) Run(ctx context.Context, r controller.Runtime,
 		}); err != nil {
 			return err
 		}
+
+		lastSynced, lastRootVersion = true, rootVersion
 
 		r.ResetRestartBackoff()
 	}

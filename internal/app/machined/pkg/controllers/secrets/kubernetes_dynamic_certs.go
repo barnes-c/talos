@@ -115,12 +115,21 @@ func (ctrl *KubernetesDynamicCertsController) Run(ctx context.Context, r control
 	refreshTicker := time.NewTicker(KubernetesCertificateValidityDuration / 2)
 	defer refreshTicker.Stop()
 
+	var (
+		lastSynced         bool
+		lastRootVersion    string
+		lastCertSANVersion string
+	)
+
 	for {
+		periodicRefresh := false
+
 		select {
 		case <-ctx.Done():
 			return nil
 		case <-r.EventCh():
 		case <-refreshTicker.C:
+			periodicRefresh = true
 		}
 
 		k8sRoot, err := safe.ReaderGet[*secrets.KubernetesRoot](ctx, r, resource.NewMetadata(secrets.NamespaceName, secrets.KubernetesRootType, secrets.KubernetesRootID, resource.VersionUndefined))
@@ -129,6 +138,8 @@ func (ctrl *KubernetesDynamicCertsController) Run(ctx context.Context, r control
 				if err = ctrl.teardownAll(ctx, r); err != nil {
 					return fmt.Errorf("error destroying resources: %w", err)
 				}
+
+				lastSynced, lastRootVersion, lastCertSANVersion = false, "", ""
 
 				continue
 			}
@@ -147,6 +158,8 @@ func (ctrl *KubernetesDynamicCertsController) Run(ctx context.Context, r control
 		}
 
 		if !timeSync.TypedSpec().Synced {
+			lastSynced = false
+
 			continue
 		}
 
@@ -159,11 +172,23 @@ func (ctrl *KubernetesDynamicCertsController) Run(ctx context.Context, r control
 			return err
 		}
 
+		rootVersion, certSANVersion := k8sRoot.Metadata().Version().String(), certSANs.Metadata().Version().String()
+
+		// Only the Synced flag matters here: it gates certificate generation on the clock
+		// being correct. The other TimeStatus fields (SpikeDetected, ConsecutiveSpikes) flip
+		// on transient NTP jitter without the clock ever moving, and regenerating on those
+		// re-renders the control plane static pods, restarting the whole control plane.
+		if lastSynced && !periodicRefresh && rootVersion == lastRootVersion && certSANVersion == lastCertSANVersion {
+			continue
+		}
+
 		if err = safe.WriterModify(ctx, r, secrets.NewKubernetesDynamicCerts(), func(r *secrets.KubernetesDynamicCerts) error {
 			return ctrl.updateSecrets(k8sRoot.TypedSpec(), r.TypedSpec(), certSANs.TypedSpec())
 		}); err != nil {
 			return err
 		}
+
+		lastSynced, lastRootVersion, lastCertSANVersion = true, rootVersion, certSANVersion
 
 		r.ResetRestartBackoff()
 	}
